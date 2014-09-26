@@ -17,10 +17,10 @@ const int Speed_1 = 10;
 const int Speed_2 = 11;
 const int Speed_3 = 12;
 const int Timer_LED = 13;
-int interval = 0;         // timer incremental 65535:3 = 21845; 21845 x 82 = 1.791.290
+unsigned int interval = 0;         // timer incremental 65535:3 = 21845; 21845 x 82 = 1.791.290
                           // buoc nhay hen gio 30p ~ 1.800.000 ms
 unsigned long real_interval = 0;    // real incremental for timer
-boolean timer_flag = true;        // flag for timer status FOR TEST
+boolean timer_flag = false;        // flag for timer status
 unsigned long startTimer = 0;      // thoi gian bat dau tinh de hen gio
 //int TimerOff = 0;    //variable for timer to OFF
 int CurrentSpeed = 1;   // variable for the last #speed 1, 2 or 3)
@@ -128,33 +128,41 @@ void loop() {
     else    // breaks the loop
     {
       Serial.print("nhan tin hieu OFF, running = False");
-      Serial.print (CurrentSpeed,DEC);
-      break; 
+      Serial.print (CurrentSpeed,DEC); 
     }
     break;
     //Serial.print ('Button 1, count:');
     //Serial.print (count,0);
     //count = count + 1;
   case 0xFFE21D:    // receiving ON/Speed signal from Remoter
-    SetSpeed ();
     timer_flag = false;
-    Serial.print (CurrentSpeed,DEC); 
-  case 0xAAAAAA:    // receiving Timer signal from Remoter   
-    {
-      interval = interval + 21845;
-      real_interval = interval * 82;
-      timer_flag = true;
-      startTimer = millis ();
-      if (interval + 1 == 0)
-        timer_flag = false;
-    }
-    
+    SetSpeed ();
+    Serial.print (CurrentSpeed,DEC);
+    break; 
+  case 0xFF629D:    // receiving Timer signal from Remoter   
+    if (interval + 1 == 0)
+      {
+      timer_flag = false;
+      interval = 0;
+      Serial.print ("timer_flag is:  ");
+      Serial.println (timer_flag);
+      break;
+      }
+    interval = interval + 21845;
+    real_interval = interval; //FOR TEST must be *82
+    timer_flag = true;
+    startTimer = millis ();
+    Serial.print ("interval is:  ");
+    Serial.println (interval);
+    Serial.print ("timer_flag is:  ");
+    Serial.println (timer_flag);
+    break;
   default:
     break;
   } 
     irrecv.resume(); // Receive the next value
   }
-  delay(100);
+  delay(10);          //delay for stable?
 
   ON_Btn_State = digitalRead(ON_Speed_Btn);  // read the ON_Btn_State input pin: 6
   if (ON_Btn_State != last_ON_Btn_State)     // compare the buttonState to its previous state
@@ -162,7 +170,7 @@ void loop() {
     if (ON_Btn_State == HIGH)                // if the ON button state has changed from LOW to HIGH
       {
       SetSpeed ();
-      timer_flag = false;
+      //timer_flag = false;
       count++;
       Serial.println("on");
       Serial.print("number of button pushes:  ");
@@ -175,17 +183,17 @@ void loop() {
       Serial.println("off"); 
       }
     }
-  last_ON_Btn_State = ON_Btn_State;            // save the current state as the last state, for next time through the loop  
+  last_ON_Btn_State = ON_Btn_State;            // save the current state as the last state, for next time through the loop * 
   
-  if (timer_flag == true && (millis () - startTimer >= interval))  //FOR TEST
+  if (timer_flag == true && (millis () - startTimer >= real_interval))  
     {
         digitalWrite(Speed_1, LOW);
         digitalWrite(Speed_2, LOW);
         digitalWrite(Speed_3, LOW);
         running = false;
-        Serial.println(interval);
-        Serial.println(" Timer flag:  ");
-        Serial.println(timer_flag);
-        delay (2000); // FOS TEST
+        //Serial.println(interval);
+       // Serial.println(" Timer flag:  ");
+       // Serial.println(timer_flag);
+        delay (10);     //for stable
     }  
 }
