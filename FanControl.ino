@@ -44,6 +44,7 @@ void setup()
   pinMode(Speed_1, OUTPUT); 
   pinMode(Speed_2, OUTPUT);
   pinMode(Speed_3, OUTPUT);
+  pinMode(Timer_LED, OUTPUT);
   irrecv.enableIRIn(); // Start the receiver
 }
 
@@ -116,6 +117,9 @@ void loop() {
     Serial.print ("tin hieu 0xFFFFFF");
     break;
   case 0xFFA25D:    // receiving OFF signal from Remoter   
+    digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
+    delay (15);
+    digitalWrite(Buzzer, LOW);
     if (running == true) //then turns all OFF
     {
       digitalWrite(Speed_1, LOW);
@@ -135,17 +139,24 @@ void loop() {
     //Serial.print (count,0);
     //count = count + 1;
   case 0xFFE21D:    // receiving ON/Speed signal from Remoter
-    timer_flag = false;
+    digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
+    delay (15);
+    digitalWrite(Buzzer, LOW);
+    //timer_flag = false;
     SetSpeed ();
     Serial.print (CurrentSpeed,DEC);
     break; 
   case 0xFF629D:    // receiving Timer signal from Remoter   
-    if (interval + 1 == 0)
+    digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
+    delay (15);
+    digitalWrite(Buzzer, LOW);
+    if (interval == 65535)
       {
       timer_flag = false;
       interval = 0;
       Serial.print ("timer_flag is:  ");
       Serial.println (timer_flag);
+      digitalWrite(Timer_LED, LOW);
       break;
       }
     interval = interval + 21845;
@@ -156,6 +167,7 @@ void loop() {
     Serial.println (interval);
     Serial.print ("timer_flag is:  ");
     Serial.println (timer_flag);
+    digitalWrite(Timer_LED, HIGH);
     break;
   default:
     break;
@@ -169,6 +181,9 @@ void loop() {
     {
     if (ON_Btn_State == HIGH)                // if the ON button state has changed from LOW to HIGH
       {
+      digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
+      delay (15);
+      digitalWrite(Buzzer, LOW);
       SetSpeed ();
       //timer_flag = false;
       count++;
@@ -187,13 +202,17 @@ void loop() {
   
   if (timer_flag == true && (millis () - startTimer >= real_interval))  
     {
-        digitalWrite(Speed_1, LOW);
-        digitalWrite(Speed_2, LOW);
-        digitalWrite(Speed_3, LOW);
-        running = false;
-        //Serial.println(interval);
+       digitalWrite(Speed_1, LOW);
+       digitalWrite(Speed_2, LOW);
+       digitalWrite(Speed_3, LOW);
+       running = false;
+       //Serial.println(interval);
        // Serial.println(" Timer flag:  ");
        // Serial.println(timer_flag);
-        delay (10);     //for stable
+       timer_flag = false;
+       digitalWrite(Timer_LED, LOW);
+       digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
+       delay (15);
+       digitalWrite(Buzzer, LOW);
     }  
 }
