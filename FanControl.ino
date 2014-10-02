@@ -27,6 +27,8 @@ int CurrentSpeed = 1;   // variable for the last #speed 1, 2 or 3)
 boolean running = false;
 int ON_Btn_State = 0;         // current state of the ON button
 int last_ON_Btn_State = 0;     // previous state of the ON button
+int OFF_Btn_State = 0;
+int last_OFF_Btn_State = 0;
 int count = 0;
 
 IRrecv irrecv(RECV_PIN);
@@ -198,7 +200,20 @@ void loop() {
       Serial.println("off"); 
       }
     }
-  last_ON_Btn_State = ON_Btn_State;            // save the current state as the last state, for next time through the loop * 
+  last_ON_Btn_State = ON_Btn_State;            // save the current state as the last state, for next time through the loop
+  
+  OFF_Btn_State = digitalRead(OFF_Btn);  // read the OFF_Btn_State input pin: 5
+  if (OFF_Btn_State != last_OFF_Btn_State && OFF_Btn_State == HIGH)    
+    {
+      digitalWrite(Speed_1, LOW);
+      digitalWrite(Speed_2, LOW);
+      digitalWrite(Speed_3, LOW);
+      digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
+      delay (15);
+      digitalWrite(Buzzer, LOW);
+      running = false; 
+    }
+  last_OFF_Btn_State = OFF_Btn_State;            // save the current state as the last state, for next time through the loop
   
   if (timer_flag == true && (millis () - startTimer >= real_interval))  
     {
