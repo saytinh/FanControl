@@ -16,7 +16,7 @@ const int Buzzer = 9;
 const int Speed_1 = 10;
 const int Speed_2 = 11;
 const int Speed_3 = 12;
-const int Timer_LED = 13;
+const int Timer_LED = 0;  //changed from 13 to 0 port
 unsigned int interval = 0;         // timer incremental 65535:3 = 21845; 21845 x 82 = 1.791.290
                           // buoc nhay hen gio 30p ~ 1.800.000 ms
 unsigned long real_interval = 0;    // real incremental for timer
