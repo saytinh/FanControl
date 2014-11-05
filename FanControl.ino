@@ -118,7 +118,7 @@ void loop() {
   case 0xFFFFFFFF:
     Serial.print ("tin hieu 0xFFFFFF");
     break;
-  case 0xFFA25D:    // receiving OFF signal from Remoter   
+  case 0xE318261B:    // receiving OFF signal from Remoter, since change IR receiver  
     digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
     delay (15);
     digitalWrite(Buzzer, LOW);
@@ -140,7 +140,8 @@ void loop() {
     //Serial.print ('Button 1, count:');
     //Serial.print (count,0);
     //count = count + 1;
-  case 0xFFE21D:    // receiving ON/Speed signal from Remoter
+  case 0xEE886D7F
+:    // receiving ON/Speed signal from Remoter
     digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
     delay (15);
     digitalWrite(Buzzer, LOW);
@@ -148,7 +149,7 @@ void loop() {
     SetSpeed ();
     Serial.print (CurrentSpeed,DEC);
     break; 
-  case 0xFF629D:    // receiving Timer signal from Remoter   
+  case 0x511DBB:    // receiving Timer signal from Remoter   
     digitalWrite(Buzzer, HIGH);      // buzzing for 15ms
     delay (15);
     digitalWrite(Buzzer, LOW);
